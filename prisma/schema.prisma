@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Artwork {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  category    String
+  technique   String   @default("Óleo sobre lienzo")
+  year        Int
+  dimensions  String?
+  price       Float
+  imageUrl    String
+  featured    Boolean  @default(false)
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model SiteContent {
+  id          Int      @id @default(autoincrement())
+  page        String
+  sectionKey  String
+  sectionType String   @default("text")
+  title       String?
+  subtitle    String?
+  content     String?
+  imageUrl    String?
+  buttonText  String?
+  buttonLink  String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([page, sectionKey])
+}
+
+model SocialPost {
+  id          Int      @id @default(autoincrement())
+  platform    String
+  postUrl     String
+  imageUrl    String
+  caption     String?
+  likes       Int      @default(0)
+  isActive    Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+model SiteSettings {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  type      String   @default("text")
+  label     String
+  group     String   @default("general")
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  stripeSessionId String   @unique
+  stripePaymentId String?
+  customerEmail   String
+  customerName    String
+  customerPhone   String?
+  shippingAddress String?
+  artworkId       Int
+  artworkTitle    String
+  artworkPrice    Float
+  status          String   @default("pending")
+  estimatedDays   Int?
+  trackingNumber  String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
